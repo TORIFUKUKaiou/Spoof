@@ -10,20 +10,20 @@ defmodule SpoofWeb.SpoofController do
 
     post(webhook_url(domain), msg, username, member["profile"]["image_72"], channel_name)
 
-    json conn, nil
+    send_resp(conn, 200, "")
   end
 
   def create(conn, %{"text" => "", "command" => "/saito", "team_domain" => team_domain, "channel_name" => channel_name} = params) do
     text = "＊べっぴぃえぇ！！ よしぃよしぃ ベッシーおちぃつけぇ！ てぇいんさん！スメブラくでせぃ！！＊"
     saito(team_domain, text, channel_name)
 
-    json conn, nil
+    send_resp(conn, 200, "")
   end
 
   def create(conn, %{"text" => text, "command" => "/saito", "team_domain" => team_domain, "channel_name" => channel_name} = params) do
     saito(team_domain, text, channel_name)
 
-    json conn, nil
+    send_resp(conn, 200, "")
   end
 
   defp post(url, text, username, icon_url, channel_name) do
