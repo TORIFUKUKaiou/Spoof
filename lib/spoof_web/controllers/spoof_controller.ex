@@ -2,6 +2,25 @@ defmodule SpoofWeb.SpoofController do
   use SpoofWeb, :controller
 
   def create(conn, %{"text" => text, "command" => "/spoof", "team_domain" => team_domain, "channel_name" => channel_name} = params) do
+    spawn(SpoofWeb.SpoofController, :spoof, [text, team_domain, channel_name])
+
+    send_resp(conn, 200, "")
+  end
+
+  def create(conn, %{"text" => "", "command" => "/saito", "team_domain" => team_domain, "channel_name" => channel_name} = params) do
+    text = "＊べっぴぃえぇ！！ よしぃよしぃ ベッシーおちぃつけぇ！ てぇいんさん！スメブラくでせぃ！！＊"
+    spawn(SpoofWeb.SpoofController, :saito, [text, team_domain, channel_name])
+
+    send_resp(conn, 200, "")
+  end
+
+  def create(conn, %{"text" => text, "command" => "/saito", "team_domain" => team_domain, "channel_name" => channel_name} = params) do
+    spawn(SpoofWeb.SpoofController, :saito, [text, team_domain, channel_name])
+
+    send_resp(conn, 200, "")
+  end
+
+  def spoof(text, team_domain, channel_name) do
     [head | tail] = String.split(text, " ")
     msg = Enum.join(tail, " ")
     username = String.split(head, "@") |> Enum.at(1)
@@ -9,21 +28,12 @@ defmodule SpoofWeb.SpoofController do
     member = Enum.find(members(domain), &(&1["name"] == username))
 
     post(webhook_url(domain), msg, username, member["profile"]["image_72"], channel_name)
-
-    send_resp(conn, 200, "")
   end
 
-  def create(conn, %{"text" => "", "command" => "/saito", "team_domain" => team_domain, "channel_name" => channel_name} = params) do
-    text = "＊べっぴぃえぇ！！ よしぃよしぃ ベッシーおちぃつけぇ！ てぇいんさん！スメブラくでせぃ！！＊"
-    saito(team_domain, text, channel_name)
-
-    send_resp(conn, 200, "")
-  end
-
-  def create(conn, %{"text" => text, "command" => "/saito", "team_domain" => team_domain, "channel_name" => channel_name} = params) do
-    saito(team_domain, text, channel_name)
-
-    send_resp(conn, 200, "")
+  def saito(text, team_domain, channel_name) do
+    domain(team_domain)
+      |> webhook_url
+      |> post(text, "ハナミトリ夫", "https://i.imgur.com/q58ZDDo.png", channel_name)
   end
 
   defp post(url, text, username, icon_url, channel_name) do
@@ -37,12 +47,6 @@ defmodule SpoofWeb.SpoofController do
 
     headers = [{"Content-type", "application/json"}]
     HTTPoison.post!(url, body, headers)
-  end
-
-  defp saito(team_domain, text, channel_name) do
-    domain(team_domain)
-      |> webhook_url
-      |> post(text, "ハナミトリ夫", "https://i.imgur.com/q58ZDDo.png", channel_name)
   end
 
   defp members(domain) do
