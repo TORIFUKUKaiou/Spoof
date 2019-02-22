@@ -23,4 +23,9 @@ defmodule SpoofWeb.Router do
   # scope "/api", SpoofWeb do
   #   pipe_through :api
   # end
+
+  scope "/api/v1", SpoofWeb do
+    pipe_through :api
+    post "/spoof", SpoofController, :create
+  end
 end
