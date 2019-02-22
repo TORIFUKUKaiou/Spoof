@@ -13,6 +13,19 @@ defmodule SpoofWeb.SpoofController do
     json conn, nil
   end
 
+  def create(conn, %{"text" => "", "command" => "/saito", "team_domain" => team_domain, "channel_name" => channel_name} = params) do
+    text = "＊べっぴぃえぇ！！ よしぃよしぃ ベッシーおちぃつけぇ！ てぇいんさん！スメブラくでせぃ！！＊"
+    saito(team_domain, text, channel_name)
+
+    json conn, nil
+  end
+
+  def create(conn, %{"text" => text, "command" => "/saito", "team_domain" => team_domain, "channel_name" => channel_name} = params) do
+    saito(team_domain, text, channel_name)
+
+    json conn, nil
+  end
+
   defp post(url, text, username, icon_url, channel_name) do
     body = %{
               text: text,
@@ -24,6 +37,12 @@ defmodule SpoofWeb.SpoofController do
 
     headers = [{"Content-type", "application/json"}]
     HTTPoison.post!(url, body, headers)
+  end
+
+  defp saito(team_domain, text, channel_name) do
+    domain(team_domain)
+      |> webhook_url
+      |> post(text, "ハナミトリ夫", "https://i.imgur.com/q58ZDDo.png", channel_name)
   end
 
   defp members(domain) do
