@@ -27,7 +27,7 @@ defmodule SpoofWeb.SpoofController do
     domain = domain(team_domain)
     member = Enum.find(members(domain), &(&1["name"] == username))
 
-    post(webhook_url(domain), msg, username, member["profile"]["image_72"], channel_name)
+    post(webhook_url(domain), msg, member["profile"]["display_name"], member["profile"]["image_72"], channel_name)
   end
 
   def saito(text, team_domain, channel_name) do
