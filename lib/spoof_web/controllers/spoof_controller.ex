@@ -27,7 +27,7 @@ defmodule SpoofWeb.SpoofController do
     domain = domain(team_domain)
     member = Enum.find(members(domain), &(&1["name"] == username))
 
-    post(webhook_url(domain), msg, member["profile"]["display_name"], member["profile"]["image_72"], channel_name)
+    post(webhook_url(domain), msg, username(member["profile"]["display_name"], member["profile"]["real_name"]), member["profile"]["image_72"], channel_name)
   end
 
   def saito(text, team_domain, channel_name) do
@@ -68,4 +68,10 @@ defmodule SpoofWeb.SpoofController do
   defp users_list_url(domain) do
     "https://slack.com/api/users.list?token=#{System.get_env("SLACK_#{domain}_TOKEN")}"
   end
+
+  defp username(display_name, real_name) when byte_size(display_name) == 0 do
+    real_name
+  end
+
+  defp username(display_name, real_name), do: display_name
 end
