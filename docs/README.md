@@ -33,19 +33,51 @@ Ready to run in production? Please [check our deployment guides](http://www.phoe
 ## Set environment variable
 
 ### Use users.list API for getting icon
-- [Legacy tokens](https://api.slack.com/custom-integrations/legacy-tokens)
 
 ```
+https://api.slack.com/apps
+|> Create an App
+|> Input: App Name and Development Slack Workspace
+|> Create App
+|> Basic Information
+|> Add features and functionality
+|> Permissions
+|> Select: Access your workspace’s profile information
+|> Reinstall App
+|> OAuth Access Token
+|> Copy
+
 export SLACK_YOUR_WORKSPACE_TOKEN="xoxp-..."
 ```
 
 ### Use Incoming WebHooks for posting message
-- https://your-workspace.slack.com/apps/manage/custom-integrations
-- Incoming WebHooks > Add Configuration
+```
+https://<your-domain>.slack.com/apps/manage
+|> 検索
+|> Serach: Incoming Webhook
+|> インストール
+|> 設定を追加
+|> Incoming Web インテグレーションの追加
+|> Copy Webhook URL
+
+export SLACK_YOUR_DOMAIN_WEBHOOK_URL="https://hooks.slack.com/services/.../..."
 
 ```
-export SLACK_YOUR_WORKSPACE_WEBHOOK_URL="https://hooks.slack.com/services/..."
-```
 ![](images/incoming_webhooks.png)
+
+## Set Slash Commands on Slack
+```
+https://api.slack.com/apps
+|> Basic Information
+|> Slash Commands
+|> Create New Command
+|> Command: /spoof
+|> Request URL: https://<your-domain>/api/v1/spoof
+|> Short Description: spoof
+|> Usage Hint: @username message
+|> Save
+|> reinstall your app
+|> Reinstall App
+```
 
 Enjoy spoofing!!!
