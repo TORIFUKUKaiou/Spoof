@@ -1,6 +1,12 @@
 defmodule SpoofWeb.SpoofController do
   use SpoofWeb, :controller
 
+  def create(conn, %{"text" => text, "command" => "/spoof", "team_domain" => team_domain, "channel_name" => "directmessage", "user_name" => user_name }) do
+    spawn(SpoofWeb.SpoofController, :spoof, [text, team_domain, "@#{user_name}"])
+
+    send_resp(conn, 200, "")
+  end
+
   def create(conn, %{"text" => text, "command" => "/spoof", "team_domain" => team_domain, "channel_name" => channel_name} = params) do
     spawn(SpoofWeb.SpoofController, :spoof, [text, team_domain, channel_name])
 
