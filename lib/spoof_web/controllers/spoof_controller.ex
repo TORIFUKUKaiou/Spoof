@@ -127,10 +127,15 @@ defmodule SpoofWeb.SpoofController do
     HTTPoison.post!(url, body, headers)
   end
 
-  defp members(domain) do
-    {:ok, %{ body: body }} = users_list_url(domain) |> HTTPoison.get
-    %{"members" => members} = Poison.decode!(body)
-    members
+  defp members(domain), do: _members(domain, nil, [])
+
+  defp _members(domain, "", got_members), do: got_members
+
+  defp _members(domain, cursor, got_members) do
+    {:ok, %{ body: body }} = users_list_url(domain, cursor) |> HTTPoison.get
+    %{"members" => members, "response_metadata" => %{"next_cursor" => next_cursor}} = Poison.decode!(body)
+
+    _members(domain, next_cursor, got_members ++ members)
   end
 
   defp domain(team_domain) do
@@ -143,8 +148,12 @@ defmodule SpoofWeb.SpoofController do
     System.get_env("SLACK_#{domain}_WEBHOOK_URL")
   end
 
-  defp users_list_url(domain) do
+  defp users_list_url(domain, nil) do
     "https://slack.com/api/users.list?token=#{System.get_env("SLACK_#{domain}_TOKEN")}"
+  end
+
+  defp users_list_url(domain, cursor) do
+    "https://slack.com/api/users.list?token=#{System.get_env("SLACK_#{domain}_TOKEN")}&cursor=#{cursor}"
   end
 
   defp username(display_name, real_name) when byte_size(display_name) == 0 do
