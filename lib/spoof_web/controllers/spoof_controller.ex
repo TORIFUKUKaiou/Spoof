@@ -134,8 +134,12 @@ defmodule SpoofWeb.SpoofController do
   defp _members(domain, cursor, got_members) do
     {:ok, %{ body: body }} = users_list_url(domain, cursor) |> HTTPoison.get
     %{"members" => members, "response_metadata" => %{"next_cursor" => next_cursor}} = Poison.decode!(body)
+    slim_members = members |> Enum.map(fn m ->
+      %{"name" => name, "profile" => %{"display_name" => display_name, "real_name" => real_name, "image_72" => image_72}} = m
+      %{"name" => name, "profile" => %{"display_name" => display_name, "real_name" => real_name, "image_72" => image_72}}
+    end)
 
-    _members(domain, next_cursor, got_members ++ members)
+    _members(domain, next_cursor, got_members ++ slim_members)
   end
 
   defp domain(team_domain) do
